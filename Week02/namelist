@@ -1,0 +1,11 @@
+import string_utils 
+
+names = ["  Choi jeong", "KIM KWANGHYUN ", "park seonghan", "choi JIHUN  "]
+
+cleaned_names = []
+for name in names:
+    cleaned_names.append(string_utils.clean_lower(name))
+
+cleaned_names.sort()
+
+print(cleaned_names)
