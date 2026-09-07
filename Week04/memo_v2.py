@@ -1,0 +1,77 @@
+from dotenv import load_dotenv
+import os
+import json
+from datetime import date
+
+load_dotenv()
+
+# 환경변수가 없으면 기본값 사용
+MEMO_FILE = os.getenv("MEMO_FILE_PATH", "memos.json")
+
+def load_memos():
+    try:
+        with open(MEMO_FILE, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except FileNotFoundError:
+        return []
+    except json.JSONDecodeError:
+        print("저장된 데이터 형식이 잘못되었습니다. 새로 시작합니다")
+        return []
+
+def save_memos(memos):
+    with open(MEMO_FILE, "w", encoding="utf-8") as f:
+        json.dump(memos, f, ensure_ascii=False, indent=4)
+
+def add_memo(memos):
+    content = input("메모 내용을 입력하세요: ")
+    new_id = len(memos) + 1
+    memo = {
+        "id": new_id,
+        "content": content,
+        "date": str(date.today())
+    }
+    memos.append(memo)
+    save_memos(memos)
+    print("메모가 추가되었습니다")
+
+def show_memos(memos):
+    if not memos:
+        print("저장된 메모가 없습니다")
+        return
+    for memo in memos:
+        print(f"[{memo['id']}] {memo['date']} - {memo['content']}")
+
+def search_memos(memos):
+    keyword = input("검색할 내용을 입력하세요: ")
+    found = [m for m in memos if keyword in m["content"]]
+    if not found:
+        print("검색 결과가 없습니다")
+    else:
+        for memo in found:
+            print(f"[{memo['id']}] {memo['date']} - {memo['content']}")
+
+def main():
+    print(f"메모 저장 위치: {MEMO_FILE}")
+    memos = load_memos()
+
+    while True:
+        print("\n1. 메모 추가")
+        print("2. 전체 메모 조회")
+        print("3. 메모 검색")
+        print("4. 종료")
+        choice = input("메뉴를 선택하세요: ")
+
+        if choice == "1":
+            add_memo(memos)
+        elif choice == "2":
+            show_memos(memos)
+        elif choice == "3":
+            search_memos(memos)
+        elif choice == "4":
+            print("프로그램을 종료합니다")
+            break
+        else:
+            print("잘못된 입력입니다")
+
+if __name__ == "__main__":
+    main()
