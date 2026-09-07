@@ -1,0 +1,73 @@
+import json
+
+def read_log(filename):
+    try:
+        with open(filename, "r", encoding="utf-8") as f:
+            lines = f.readlines()
+        return [line.strip() for line in lines if line.strip()]
+    except FileNotFoundError:
+        print(f"{filename} 파일을 찾을 수 없습니다")
+        return []
+
+def parse_log_line(line):
+    """한 줄을 날짜/테스트명/결과로 분리"""
+    parts = line.split(",")
+    if len(parts) != 3:
+        raise ValueError("형식이 올바르지 않습니다 (날짜,테스트명,결과)")
+    
+    date, test_name, result = parts
+    if result not in ["PASS", "FAIL"]:
+        raise ValueError("결과값은 PASS 또는 FAIL이어야 합니다")
+    
+    return {"date": date, "test_name": test_name, "result": result}
+
+def analyze_log(lines):
+    pass_count = 0
+    fail_count = 0
+    failed_tests = []
+    error_lines = []
+
+    for line in lines:
+        try:
+            parsed = parse_log_line(line)
+            if parsed["result"] == "PASS":
+                pass_count += 1
+            else:
+                fail_count += 1
+                failed_tests.append(parsed["test_name"])
+        except ValueError as e:
+            error_lines.append({"line": line, "error": str(e)})
+
+    total = pass_count + fail_count
+    success_rate = (pass_count / total * 100) if total > 0 else 0
+
+    result = {
+        "total": total,
+        "pass_count": pass_count,
+        "fail_count": fail_count,
+        "success_rate": round(success_rate, 2),
+        "failed_tests": failed_tests,
+        "error_lines": error_lines
+    }
+    return result
+
+def save_summary(data, filename):
+    with open(filename, "w", encoding="utf-8") as f:
+        json.dump(data, f, ensure_ascii=False, indent=4)
+    print(f"{filename}에 저장되었습니다")
+
+def main():
+    lines = read_log("test_log.txt")
+    if not lines:
+        print("처리할 로그가 없습니다")
+        return
+
+    result = analyze_log(lines)
+    print(result)
+    save_summary(result, "summary.json")
+
+if __name__ == "__main__":
+    main()
+
+if __name__ == "__main__":
+    main()

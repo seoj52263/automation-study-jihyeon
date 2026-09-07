@@ -1,0 +1,21 @@
+{
+    "total": 7,
+    "valid_count": 5,
+    "invalid_count": 2,
+    "valid_emails": [
+        "jihyeon@gmail.com",
+        "seonghan@naver.com",
+        "jihoon@gmail.com",
+        "jeong@naver.com",
+        "test@daum.net"
+    ],
+    "invalid_emails": [
+        "잘못된데이터",
+        "tesTdata"
+    ],
+    "domain_count": {
+        "gmail.com": 2,
+        "naver.com": 2,
+        "daum.net": 1
+    }
+}
